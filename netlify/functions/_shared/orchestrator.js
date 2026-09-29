@@ -2,7 +2,7 @@ const {promoScore}=require('./scoring');
 const {verify}=require('./verifier');
 const {historyEnrich}=require('./history');
 const {demoSearch}=require('./providers/demo');
-const {magaluSearch,kabumSearch}=require('./providers/retailers');
+const {magaluSearch,kabumSearch,casasBahiaSearch}=require('./providers/retailers');
 const {storeSearches}=require('./providers/store-links');
 
 function discount(price,original){
@@ -13,7 +13,8 @@ function discount(price,original){
 async function orchestrate(query){
   const providers=[
     {key:'magalu',name:'Magazine Luiza',live:true,run:()=>magaluSearch(query)},
-    {key:'kabum',name:'KaBuM!',live:true,run:()=>kabumSearch(query)}
+    {key:'kabum',name:'KaBuM!',live:true,run:()=>kabumSearch(query)},
+    {key:'casasbahia',name:'Casas Bahia',live:true,run:()=>casasBahiaSearch(query)}
   ];
 
   if(process.env.RADARX_DEMO==='true'){
