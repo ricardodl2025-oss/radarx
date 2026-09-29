@@ -109,8 +109,8 @@ create policy "deny_public_offers" on offers
 for all to anon, authenticated using (false) with check (false);
 create policy "deny_public_price_history" on price_history
 for all to anon, authenticated using (false) with check (false);
-create policy "deny_public_alerts" on alerts
-for all to anon, authenticated using (false) with check (false);
+create policy "deny_authenticated_alerts" on alerts
+for all to authenticated using (false) with check (false);
 create policy "deny_public_agent_runs" on agent_runs
 for all to anon, authenticated using (false) with check (false);
 create policy "deny_public_trusted_sources" on trusted_sources
