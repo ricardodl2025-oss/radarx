@@ -4,6 +4,7 @@ const {historyEnrich}=require('./history');
 const {demoSearch}=require('./providers/demo');
 const {magaluSearch,kabumSearch,casasBahiaSearch}=require('./providers/retailers');
 const {storeSearches}=require('./providers/store-links');
+const {monetizeOffer,monetizeSearch,affiliateStatus}=require('./affiliate');
 
 function discount(price,original){
   if(!original || original<=price) return 0;
@@ -29,7 +30,8 @@ async function orchestrate(query){
   const enriched=await historyEnrich(verified);
   const items=enriched
     .map(item=>({...item,score:promoScore(item)}))
-    .sort((a,b)=>b.score-a.score||a.price-b.price);
+    .sort((a,b)=>b.score-a.score||a.price-b.price)
+    .map(monetizeOffer);
 
   const provider_status=providers.map((provider,index)=>({
     key:provider.key,
@@ -51,7 +53,8 @@ async function orchestrate(query){
 
   return {
     items,
-    direct_searches:storeSearches(query),
+    direct_searches:storeSearches(query).map(monetizeSearch),
+    affiliate:affiliateStatus(),
     provider_status,
     providers_ok:provider_status.filter(item=>item.status==='connected').length
   };
