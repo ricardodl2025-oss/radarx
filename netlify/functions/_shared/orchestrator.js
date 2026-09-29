@@ -2,7 +2,7 @@ const {promoScore}=require('./scoring');
 const {verify}=require('./verifier');
 const {historyEnrich}=require('./history');
 const {demoSearch}=require('./providers/demo');
-const {mercadoLivreSearch}=require('./providers/mercadolivre');
+const {magaluSearch,kabumSearch}=require('./providers/retailers');
 const {storeSearches}=require('./providers/store-links');
 
 function discount(price,original){
@@ -11,13 +11,9 @@ function discount(price,original){
 }
 
 async function orchestrate(query){
-  const mercadoLivreConfigured=Boolean(
-    process.env.ML_ACCESS_TOKEN ||
-    (process.env.ML_CLIENT_ID && process.env.ML_CLIENT_SECRET)
-  );
-
   const providers=[
-    {key:'mercadolivre',name:'Mercado Livre',live:mercadoLivreConfigured,run:()=>mercadoLivreSearch(query)}
+    {key:'magalu',name:'Magazine Luiza',live:true,run:()=>magaluSearch(query)},
+    {key:'kabum',name:'KaBuM!',live:true,run:()=>kabumSearch(query)}
   ];
 
   if(process.env.RADARX_DEMO==='true'){
@@ -43,6 +39,14 @@ async function orchestrate(query){
       ? String(settled[index].reason?.message||'Falha no conector')
       : undefined
   }));
+
+  provider_status.push({
+    key:'mercadolivre',
+    name:'Mercado Livre',
+    status:'direct',
+    count:0,
+    error:'Pesquisa direta disponível'
+  });
 
   return {
     items,
