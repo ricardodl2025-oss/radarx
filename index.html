@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#090d16" />
+  <title>RadarX | Caçador inteligente de promoções</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="noise"></div>
+  <header class="topbar">
+    <a class="brand" href="/"><span class="brand-dot"></span>RADARX</a>
+    <div class="status"><span class="pulse"></span> Central de agentes online</div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="eyebrow">BUSCA INTELIGENTE DE OFERTAS</div>
+      <h1>Encontre a promoção.<br><span>Antes que ela suma.</span></h1>
+      <p>Compare preços, identifique queda real e monitore produtos em várias lojas.</p>
+
+      <form id="searchForm" class="search">
+        <input id="query" autocomplete="off" placeholder="Ex.: ar-condicionado 9.000 BTUs até R$ 1.500" />
+        <button type="submit">Buscar agora</button>
+      </form>
+
+      <div class="quick">
+        <button data-q="ar-condicionado 9000 BTUs">9.000 BTUs</button>
+        <button data-q="iPhone 16">iPhone 16</button>
+        <button data-q="TV 55 polegadas">TV 55"</button>
+        <button data-q="notebook gamer">Notebook gamer</button>
+      </div>
+    </section>
+
+    <section class="agents">
+      <div class="section-title">
+        <div>
+          <span>CENTRAL DE AGENTES</span>
+          <h2>6 agentes analisando a oportunidade</h2>
+        </div>
+        <div id="agentSummary" class="muted">Aguardando pesquisa</div>
+      </div>
+      <div class="agent-grid" id="agentGrid"></div>
+    </section>
+
+    <section class="results">
+      <div class="section-title">
+        <div>
+          <span>OFERTAS</span>
+          <h2 id="resultTitle">Promoções encontradas</h2>
+        </div>
+        <select id="sort">
+          <option value="score">Melhor oportunidade</option>
+          <option value="price">Menor preço</option>
+          <option value="discount">Maior desconto</option>
+        </select>
+      </div>
+      <div id="empty" class="empty">Faça uma busca para o RadarX começar a trabalhar.</div>
+      <div id="cards" class="cards"></div>
+    </section>
+
+    <section class="alert-box">
+      <div>
+        <span>RADAR AUTOMÁTICO</span>
+        <h2>Quer ser avisado quando chegar no seu preço?</h2>
+        <p>Cadastre um produto e um valor máximo. O RadarX deixa o alerta salvo no Supabase.</p>
+      </div>
+      <form id="alertForm">
+        <input id="alertQuery" placeholder="Produto" />
+        <input id="alertPrice" type="number" step="0.01" placeholder="Preço máximo" />
+        <input id="alertEmail" type="email" placeholder="Seu e-mail" />
+        <button type="submit">Criar alerta</button>
+      </form>
+      <div id="alertMessage"></div>
+    </section>
+  </main>
+
+  <footer>RadarX V1 • Supabase + Netlify • Arquitetura preparada para múltiplas lojas</footer>
+  <script src="/app.js"></script>
+</body>
+</html>
