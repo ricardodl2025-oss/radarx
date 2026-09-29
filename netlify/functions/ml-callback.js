@@ -21,8 +21,11 @@ exports.handler=async(event)=>{
   const query=event.queryStringParameters||{};
   if(query.error) return html(400,'Autorização cancelada','O Mercado Livre não autorizou a conexão.');
 
-  const expected=cookieValue(event.headers?.cookie,'ml_oauth_state');
-  if(!query.code || !query.state || !expected || query.state!==expected){
+  const context=cookieValue(event.headers?.cookie,'ml_oauth_ctx')||'';
+  const separator=context.indexOf('.');
+  const expected=separator>0?context.slice(0,separator):'';
+  const verifier=separator>0?context.slice(separator+1):'';
+  if(!query.code || !query.state || !expected || !verifier || query.state!==expected){
     return html(400,'Autorização inválida','O código de segurança expirou. Inicie a conexão novamente pelo RadarX.');
   }
 
@@ -38,7 +41,8 @@ exports.handler=async(event)=>{
     client_id:clientId,
     client_secret:clientSecret,
     code:query.code,
-    redirect_uri:redirectUri
+    redirect_uri:redirectUri,
+    code_verifier:verifier
   });
 
   try{
@@ -67,7 +71,7 @@ exports.handler=async(event)=>{
       statusCode:302,
       headers:{
         location:'/?ml=connected',
-        'set-cookie':'ml_oauth_state=; Path=/.netlify/functions/ml-callback; Max-Age=0; HttpOnly; Secure; SameSite=Lax',
+        'set-cookie':'ml_oauth_ctx=; Path=/.netlify/functions/ml-callback; Max-Age=0; HttpOnly; Secure; SameSite=Lax',
         'cache-control':'no-store'
       },
       body:''
