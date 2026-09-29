@@ -15,7 +15,7 @@ function slug(value){
 
 function relevant(title,query){
   const name=normalize(title);
-  const tokens=normalize(query).match(/[a-z0-9]+/g)?.filter(token=>token.length>1)||[];
+  const tokens=normalize(query).match(/[a-z0-9]+/g)?.filter(token=>/\d/.test(token)||token.length>1)||[];
   if(!tokens.length) return true;
   return tokens.every(token=>name.includes(token));
 }
@@ -46,6 +46,12 @@ function jsonLdProducts(html){
     }catch{}
   }
   return products;
+}
+
+function nextData(html){
+  const match=html.match(/<script[^>]*id=["']__NEXT_DATA__["'][^>]*>([\s\S]*?)<\/script>/i);
+  if(!match) throw new Error('A loja não retornou o catálogo esperado.');
+  return JSON.parse(match[1]);
 }
 
 function mapProduct(product,store,source){
@@ -109,4 +115,64 @@ function kabumSearch(query){
   });
 }
 
-module.exports={magaluSearch,kabumSearch};
+async function casasBahiaSearch(query){
+  const html=await fetchHtml(`https://www.casasbahia.com.br/${slug(query)}/b`);
+  const data=nextData(html);
+  const catalog=data?.props?.initialState?.search?.results?.products||[];
+  const config=data?.runtimeConfig||{};
+  const wantsUsed=/\b(usado|usada|reembalado|seminovo)\b/.test(normalize(query));
+  const candidates=catalog
+    .filter(product=>product?.status==='AVAILABLE')
+    .filter(product=>relevant(product.title,query))
+    .filter(product=>wantsUsed || !/\b(usado|usada|reembalado|seminovo)\b/.test(normalize(product.title)))
+    .slice(0,24);
+
+  if(!candidates.length) return [];
+  if(!config.NPRICE_ENDPOINT || !config.NPRICE_SKU_PATH || !config.PRICE_API_KEY){
+    throw new Error('A Casas Bahia não retornou a configuração de preços.');
+  }
+
+  const priceUrl=new URL(String(config.NPRICE_ENDPOINT)+String(config.NPRICE_SKU_PATH));
+  priceUrl.searchParams.set('idsSku',candidates.map(product=>product.idSku).join(','));
+  priceUrl.searchParams.set('composicao','DescontoFormaPagamento,MelhoresParcelamentos');
+  const priceResponse=await fetch(priceUrl,{
+    headers:{
+      apiKey:String(config.PRICE_API_KEY),
+      'user-agent':USER_AGENT,
+      accept:'application/json',
+      origin:'https://www.casasbahia.com.br',
+      referer:'https://www.casasbahia.com.br/'
+    },
+    signal:AbortSignal.timeout(15000)
+  });
+  if(!priceResponse.ok) throw new Error('Casas Bahia respondeu '+priceResponse.status+' ao consultar preços.');
+
+  const priceData=await priceResponse.json();
+  const prices=new Map((priceData.PrecoSkus||[]).map(entry=>[
+    String(entry?.PrecoVenda?.IdSku||''),
+    entry?.PrecoVenda
+  ]));
+
+  return candidates.map(product=>{
+    const pricing=prices.get(String(product.idSku));
+    const price=Number(pricing?.Preco);
+    if(!pricing?.DisponibilidadeVenda || !Number.isFinite(price) || price<=0) return null;
+    const original=Number(pricing.PrecoDe);
+    return {
+      id:`casasbahia-${product.idSku}`,
+      title:product.title,
+      price,
+      original_price:Number.isFinite(original)&&original>price?original:null,
+      image:product.image||null,
+      store:'Casas Bahia',
+      official_store:false,
+      shipping_free:false,
+      condition:wantsUsed?'used':'new',
+      url:product.href,
+      seller_id:pricing.IdLojista||null,
+      source:'casasbahia'
+    };
+  }).filter(Boolean);
+}
+
+module.exports={magaluSearch,kabumSearch,casasBahiaSearch};
