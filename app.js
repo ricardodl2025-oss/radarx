@@ -102,9 +102,13 @@ async function search(q){
     const statuses=data.provider_status||[];
     const affiliateBox=$('#affiliateStatus');
     if(affiliateBox){
+      const activeStores=data.affiliate?.stores||[];
+      const pendingStores=data.affiliate?.pending||[];
       affiliateBox.textContent=data.affiliate?.active
-        ? 'Monetização ativa em Casas Bahia e KaBuM!'
-        : 'Estrutura de comissão pronta. Aguardando aprovação da conta de afiliado.';
+        ? `Monetização ativa em ${activeStores.map(store=>store==='kabum'?'KaBuM!':store).join(', ')}.`
+        : pendingStores.includes('kabum')
+          ? 'Solicitação enviada à KaBuM!. Aguardando aprovação do anunciante.'
+          : 'Estrutura de comissão pronta. Aguardando aprovação da conta de afiliado.';
       affiliateBox.dataset.active=data.affiliate?.active?'true':'false';
     }
     const connected=statuses.filter(x=>x.status==='connected').length;
