@@ -39,7 +39,10 @@
           <span>CENTRAL DE AGENTES</span>
           <h2>6 agentes analisando a oportunidade</h2>
         </div>
-        <div id="agentSummary" class="muted">Aguardando pesquisa</div>
+        <div class="connector-state">
+          <div id="agentSummary" class="muted">Aguardando pesquisa</div>
+          <a id="mlConnect" class="connect-ml" hidden href="/.netlify/functions/ml-auth">Autorizar Mercado Livre</a>
+        </div>
       </div>
       <div class="agent-grid" id="agentGrid"></div>
     </section>

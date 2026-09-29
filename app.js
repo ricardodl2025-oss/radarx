@@ -82,6 +82,8 @@ async function search(q){
     const statuses=data.provider_status||[];
     const connected=statuses.filter(x=>x.status==='connected').length;
     const mercadoLivre=statuses.find(x=>x.key==='mercadolivre');
+    const mlConnect=$('#mlConnect');
+    if(mlConnect) mlConnect.hidden=mercadoLivre?.status!=='error';
     if(mercadoLivre?.status==='error'){
       $('#agentSummary').textContent = `Mercado Livre: ${mercadoLivre.error||'falha na conexão'} • ${data.elapsed_ms||0} ms`;
     }else if(mercadoLivre?.status==='pending'){
