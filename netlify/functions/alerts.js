@@ -4,7 +4,7 @@ async function supabaseInsert(table,payload){
   if(!url||!key) throw new Error('Supabase ainda não configurado');
   const r=await fetch(`${url}/rest/v1/${table}`,{
     method:'POST',
-    headers:{apikey:key,Authorization:`Bearer ${key}`,'content-type':'application/json',Prefer:'return=representation'},
+    headers:{apikey:key,Authorization:`Bearer ${key}`,'content-type':'application/json',Prefer:'return=minimal'},
     body:JSON.stringify(payload)
   });
   const data=await r.json().catch(()=>null);
@@ -22,6 +22,6 @@ exports.handler=async(event)=>{
       return {statusCode:400,body:JSON.stringify({error:'Confira o produto, o preço e o e-mail'})};
     }
     const data=await supabaseInsert('alerts',{query,email,target_price:targetPrice,active:true});
-    return {statusCode:200,body:JSON.stringify({ok:true,data})};
+    return {statusCode:200,body:JSON.stringify({ok:true})};
   }catch(e){ return {statusCode:500,body:JSON.stringify({error:e.message})};}
 };
