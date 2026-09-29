@@ -83,13 +83,13 @@ async function search(q){
     const connected=statuses.filter(x=>x.status==='connected').length;
     const mercadoLivre=statuses.find(x=>x.key==='mercadolivre');
     const mlConnect=$('#mlConnect');
-    if(mlConnect) mlConnect.hidden=mercadoLivre?.status!=='error';
+    if(mlConnect) mlConnect.hidden=true;
     if(mercadoLivre?.status==='error'){
       $('#agentSummary').textContent = `Mercado Livre: ${mercadoLivre.error||'falha na conexão'} • ${data.elapsed_ms||0} ms`;
     }else if(mercadoLivre?.status==='pending'){
       $('#agentSummary').textContent = `Mercado Livre: credenciais não encontradas no servidor • ${data.elapsed_ms||0} ms`;
     }else{
-      $('#agentSummary').textContent = `${connected} conector(es) automático(s) • 6 lojas disponíveis • ${data.elapsed_ms||0} ms`;
+      $('#agentSummary').textContent = `${connected} conectores automáticos • Mercado Livre e mais 5 lojas por pesquisa direta • ${data.elapsed_ms||0} ms`;
     }
     renderAgents(connected?'done':'idle');
     render();
