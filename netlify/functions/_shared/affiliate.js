@@ -1,5 +1,4 @@
 const AWIN_ADVERTISERS={
-  casasbahia:'17629',
   kabum:'17729'
 };
 
@@ -8,10 +7,18 @@ function cleanPublisherId(){
   return /^\d+$/.test(value)?value:null;
 }
 
+function approvedStores(){
+  const configured=String(process.env.AWIN_APPROVED_STORES||'')
+    .split(',')
+    .map(store=>store.trim().toLowerCase())
+    .filter(Boolean);
+  return configured.filter(store=>AWIN_ADVERTISERS[store]);
+}
+
 function awinLink(storeKey,destination,clickref='radarx'){
   const publisherId=cleanPublisherId();
   const advertiserId=AWIN_ADVERTISERS[storeKey];
-  if(!publisherId || !advertiserId || !destination) return null;
+  if(!publisherId || !advertiserId || !approvedStores().includes(storeKey) || !destination) return null;
   try{
     const target=new URL(destination);
     if(target.protocol!=='https:') return null;
@@ -37,10 +44,13 @@ function monetizeSearch(store){
 }
 
 function affiliateStatus(){
+  const publisherId=cleanPublisherId();
+  const stores=approvedStores();
   return {
-    active:Boolean(cleanPublisherId()),
+    active:Boolean(publisherId && stores.length),
     network:'Awin',
-    stores:Object.keys(AWIN_ADVERTISERS)
+    stores,
+    pending:publisherId?Object.keys(AWIN_ADVERTISERS).filter(store=>!stores.includes(store)):[]
   };
 }
 
