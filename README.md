@@ -26,14 +26,14 @@ Primeira base funcional do caçador inteligente de promoções.
 1. Crie um projeto gratuito no Supabase.
 2. Abra SQL Editor.
 3. Cole e execute `supabase/schema.sql`.
-4. Copie `Project URL` e `service_role key`.
-5. A chave service_role deve existir SOMENTE nas variáveis do Netlify.
+4. Copie `Project URL` e a chave publicável.
+5. O RadarX usa RLS para permitir somente a criação segura de alertas.
 
 ## Implantação no Netlify
 1. Faça deploy desta pasta no Netlify.
 2. Em Site configuration > Environment variables, crie:
    - SUPABASE_URL
-   - SUPABASE_SERVICE_ROLE_KEY
+   - SUPABASE_PUBLISHABLE_KEY
    - RADARX_DEMO=true
 3. Para Mercado Livre real, crie também:
    - ML_ACCESS_TOKEN
@@ -57,4 +57,4 @@ Primeira base funcional do caçador inteligente de promoções.
 - Novos conectores
 
 ## Segurança
-Nunca coloque `SUPABASE_SERVICE_ROLE_KEY` no `app.js`, HTML ou qualquer arquivo público.
+Nunca coloque chaves secretas ou `service_role` no `app.js`, HTML ou qualquer arquivo público.
