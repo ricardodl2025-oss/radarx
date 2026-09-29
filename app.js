@@ -38,9 +38,28 @@ function render(){
     return (b.score||0)-(a.score||0);
   });
   $('#empty').style.display = list.length ? 'none':'block';
+  const featured=$('#featuredOffer');
+  if(featured){
+    if(list.length){
+      const best=list[0];
+      featured.hidden=false;
+      featured.innerHTML=`
+        <div class="featured-copy">
+          <span class="deal-kicker">MELHOR OPORTUNIDADE AGORA</span>
+          <strong>${safe(best.title)}</strong>
+          <small>${safe(best.store)}${best.discount?` • ${best.discount}% de desconto`:''}</small>
+        </div>
+        <div class="featured-price">${money(best.price)}</div>
+        <a href="${safeUrl(best.affiliate_url||best.url)}" target="_blank" rel="noopener noreferrer${best.affiliate?' sponsored':''}">Ver oferta</a>`;
+    }else{
+      featured.hidden=true;
+      featured.innerHTML='';
+    }
+  }
   if(!list.length) $('#empty').textContent='A comparação automática de preços será exibida quando os conectores oficiais estiverem autorizados. Use as lojas abaixo para pesquisar agora.';
   $('#cards').innerHTML = list.map(x=>`
     <article class="card">
+      ${x.image?`<div class="product-image"><img src="${safeUrl(x.image)}" alt="" loading="lazy"></div>`:''}
       <div class="top"><span class="store">${safe(x.store)}</span><span class="score">Score ${Number(x.score)||0}/100</span></div>
       <h3>${safe(x.title)}</h3>
       <div><span class="price">${money(x.price)}</span>${x.original_price?` <span class="old">${money(x.original_price)}</span>`:''}</div>
@@ -50,7 +69,8 @@ function render(){
         <span>${x.official_store?'Loja oficial':'Marketplace'}</span>
         <span>${x.condition==='new'?'Novo':x.condition||'Não informado'}</span>
       </div>
-      <a href="${safeUrl(x.url)}" target="_blank" rel="noopener noreferrer">Ver na loja</a>
+      ${x.affiliate?'<div class="affiliate-tag">Link comissionado</div>':''}
+      <a href="${safeUrl(x.affiliate_url||x.url)}" target="_blank" rel="noopener noreferrer${x.affiliate?' sponsored':''}">Ver na loja</a>
     </article>`).join('');
 }
 
@@ -58,9 +78,9 @@ function renderStoreSearches(searches=[]){
   const box=$('#storeSearches');
   if(!searches.length){ box.innerHTML=''; return; }
   box.innerHTML=searches.map(store=>`
-    <a class="store-search" href="${safeUrl(store.url)}" target="_blank" rel="noopener noreferrer">
+    <a class="store-search" href="${safeUrl(store.url)}" target="_blank" rel="noopener noreferrer${store.affiliate?' sponsored':''}">
       <span class="store-mark">${safe(store.name).slice(0,2).toUpperCase()}</span>
-      <span><strong>${safe(store.name)}</strong><small>Ver resultados atuais</small></span>
+      <span><strong>${safe(store.name)}</strong><small>${store.affiliate?'Link comissionado':'Ver resultados atuais'}</small></span>
       <b>↗</b>
     </a>`).join('');
 }
@@ -80,6 +100,13 @@ async function search(q){
     $('#resultTitle').textContent = `${results.length} ofertas para “${q}”`;
     renderStoreSearches(data.direct_searches||[]);
     const statuses=data.provider_status||[];
+    const affiliateBox=$('#affiliateStatus');
+    if(affiliateBox){
+      affiliateBox.textContent=data.affiliate?.active
+        ? 'Monetização ativa em Casas Bahia e KaBuM!'
+        : 'Estrutura de comissão pronta. Aguardando aprovação da conta de afiliado.';
+      affiliateBox.dataset.active=data.affiliate?.active?'true':'false';
+    }
     const connected=statuses.filter(x=>x.status==='connected').length;
     const mercadoLivre=statuses.find(x=>x.key==='mercadolivre');
     const mlConnect=$('#mlConnect');
