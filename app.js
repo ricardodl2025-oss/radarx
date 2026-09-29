@@ -38,6 +38,7 @@ function render(){
     return (b.score||0)-(a.score||0);
   });
   $('#empty').style.display = list.length ? 'none':'block';
+  if(!list.length) $('#empty').textContent='A comparação automática de preços será exibida quando os conectores oficiais estiverem autorizados. Use as lojas abaixo para pesquisar agora.';
   $('#cards').innerHTML = list.map(x=>`
     <article class="card">
       <div class="top"><span class="store">${safe(x.store)}</span><span class="score">Score ${Number(x.score)||0}/100</span></div>
