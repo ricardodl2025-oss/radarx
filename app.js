@@ -79,9 +79,17 @@ async function search(q){
     results = data.items||[];
     $('#resultTitle').textContent = `${results.length} ofertas para “${q}”`;
     renderStoreSearches(data.direct_searches||[]);
-    const connected=(data.provider_status||[]).filter(x=>x.status==='connected').length;
-    $('#agentSummary').textContent = `${connected} conector(es) automático(s) • 6 lojas disponíveis • ${data.elapsed_ms||0} ms`;
-    renderAgents('done');
+    const statuses=data.provider_status||[];
+    const connected=statuses.filter(x=>x.status==='connected').length;
+    const mercadoLivre=statuses.find(x=>x.key==='mercadolivre');
+    if(mercadoLivre?.status==='error'){
+      $('#agentSummary').textContent = `Mercado Livre: ${mercadoLivre.error||'falha na conexão'} • ${data.elapsed_ms||0} ms`;
+    }else if(mercadoLivre?.status==='pending'){
+      $('#agentSummary').textContent = `Mercado Livre: credenciais não encontradas no servidor • ${data.elapsed_ms||0} ms`;
+    }else{
+      $('#agentSummary').textContent = `${connected} conector(es) automático(s) • 6 lojas disponíveis • ${data.elapsed_ms||0} ms`;
+    }
+    renderAgents(connected?'done':'idle');
     render();
   }catch(e){
     renderAgents('idle');
