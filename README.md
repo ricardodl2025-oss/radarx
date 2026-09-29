@@ -1,4 +1,4 @@
-# RadarX V1
+# RadarX V2
 
 Primeira base funcional do caçador inteligente de promoções.
 
@@ -12,7 +12,8 @@ Primeira base funcional do caçador inteligente de promoções.
 - Estrutura de histórico de preços
 - Alertas gravados no Supabase
 - Conector Mercado Livre preparado para token
-- Modo demo para testar a interface sem nenhuma credencial
+- Busca direta nos sites oficiais do Magazine Luiza, Amazon Brasil, KaBuM!, Casas Bahia e Shopee
+- Modo demo somente para desenvolvimento local
 
 ## Agentes V1
 1. Orquestrador
@@ -34,16 +35,16 @@ Primeira base funcional do caçador inteligente de promoções.
 2. Em Site configuration > Environment variables, crie:
    - SUPABASE_URL
    - SUPABASE_PUBLISHABLE_KEY
-   - RADARX_DEMO=true
+   - RADARX_DEMO=false
 3. Para Mercado Livre real, crie também:
    - ML_ACCESS_TOKEN
 4. Faça um novo deploy.
 
 ## Estado dos conectores
 - Mercado Livre: código real pronto, depende do token da aplicação.
-- Magazine Luiza: ainda não ativado. Será conectado por meio oficial/parceria disponível.
-- Amazon: ainda não ativado. Será conectado por API/programa autorizado.
-- Outras lojas: entram depois pelo mesmo padrão de provider.
+- Magazine Luiza: busca direta ativa. A API oficial disponível é voltada ao catálogo de sellers.
+- Amazon: busca direta ativa. A busca automática de preço depende da API do Programa de Associados.
+- KaBuM!, Casas Bahia e Shopee: busca direta ativa nos sites oficiais.
 
 ## Próxima etapa planejada
 - Persistir cada captura em `offers` e `price_history`
