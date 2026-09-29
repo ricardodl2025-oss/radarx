@@ -45,6 +45,7 @@ create table if not exists price_history (
   captured_at timestamptz not null default now()
 );
 create index if not exists price_history_product_time_idx on price_history(product_id,captured_at desc);
+create index if not exists price_history_offer_idx on price_history(offer_id);
 
 create table if not exists alerts (
   id uuid primary key default gen_random_uuid(),
@@ -94,4 +95,22 @@ alter table agent_runs enable row level security;
 alter table trusted_sources enable row level security;
 
 -- O frontend não recebe service_role. As gravações passam pelas Netlify Functions.
--- Políticas públicas de leitura podem ser adicionadas depois quando houver autenticação de usuários.
+-- O acesso direto de visitantes e usuários autenticados fica bloqueado por padrão.
+revoke all on table alerts, products, offers, price_history, agent_runs, trusted_sources from anon, authenticated;
+revoke all on sequence price_history_id_seq from anon, authenticated;
+
+grant all on table alerts, products, offers, price_history, agent_runs, trusted_sources to service_role;
+grant all on sequence price_history_id_seq to service_role;
+
+create policy "deny_public_products" on products
+for all to anon, authenticated using (false) with check (false);
+create policy "deny_public_offers" on offers
+for all to anon, authenticated using (false) with check (false);
+create policy "deny_public_price_history" on price_history
+for all to anon, authenticated using (false) with check (false);
+create policy "deny_public_alerts" on alerts
+for all to anon, authenticated using (false) with check (false);
+create policy "deny_public_agent_runs" on agent_runs
+for all to anon, authenticated using (false) with check (false);
+create policy "deny_public_trusted_sources" on trusted_sources
+for all to anon, authenticated using (false) with check (false);
