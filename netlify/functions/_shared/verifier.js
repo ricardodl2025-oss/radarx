@@ -1,4 +1,4 @@
-const BAD = ['controle remoto','capa para','suporte para','placa','peça','evaporadora avulsa','condensadora avulsa','instalação'];
+const BAD = ['controle remoto','capa para','suporte para','limpa tela','película','carregador avulso','placa','peça','evaporadora avulsa','condensadora avulsa','instalação'];
 function verify(item, query){
   const t=(item.title||'').toLowerCase();
   const q=(query||'').toLowerCase();
