@@ -14,7 +14,7 @@ Primeira base funcional do caçador inteligente de promoções.
 - Conector Mercado Livre preparado para token
 - Busca direta nos sites oficiais do Magazine Luiza, Amazon Brasil, KaBuM!, Casas Bahia e Shopee
 - Modo demo somente para desenvolvimento local
-- Links de afiliado Awin para Casas Bahia e KaBuM!
+- Integração de afiliado Awin para lojas com programa ativo e aprovado
 
 ## Agentes V1
 1. Orquestrador
@@ -41,9 +41,10 @@ Primeira base funcional do caçador inteligente de promoções.
    - ML_ACCESS_TOKEN
 4. Para ativar as comissões da Awin, depois da aprovação dos programas, crie:
    - AWIN_AFFILIATE_ID
+   - AWIN_APPROVED_STORES (exemplo: `kabum`)
 5. Faça um novo deploy.
 
-Sem `AWIN_AFFILIATE_ID`, o RadarX mantém os links normais. Com o ID numérico configurado, os produtos de Casas Bahia e KaBuM! recebem deep links oficiais da Awin automaticamente.
+Sem `AWIN_AFFILIATE_ID`, o RadarX mantém os links normais. Uma loja só recebe deep links da Awin quando também estiver listada em `AWIN_APPROVED_STORES`, evitando marcar como comissionado um programa pendente ou encerrado.
 
 ## Estado dos conectores
 - Mercado Livre: código real pronto, depende do token da aplicação.
