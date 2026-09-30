@@ -11,17 +11,17 @@
   <div class="noise"></div>
   <header class="topbar">
     <a class="brand" href="/"><span class="brand-dot"></span>RADARX</a>
-    <div class="status"><span class="pulse"></span> Central de agentes online</div>
+    <div class="status"><span class="pulse"></span> Busca de ofertas</div>
   </header>
 
   <main>
     <section class="hero">
       <div class="eyebrow">BUSCA INTELIGENTE DE OFERTAS</div>
       <h1>Encontre a promoção.<br><span>Antes que ela suma.</span></h1>
-      <p>Compare preços, identifique queda real e monitore produtos em várias lojas.</p>
+      <p>Consulte ofertas de várias lojas e compare os preços antes de comprar.</p>
 
       <form id="searchForm" class="search">
-        <input id="query" autocomplete="off" placeholder="Ex.: ar-condicionado 9.000 BTUs até R$ 1.500" />
+        <input id="query" aria-label="Produto que deseja buscar" required minlength="2" maxlength="200" autocomplete="off" placeholder="Ex.: ar-condicionado 9000 ou notebook gamer" />
         <button type="submit">Buscar agora</button>
       </form>
 
@@ -37,14 +37,15 @@
       <div class="section-title">
         <div>
           <span>CENTRAL DE AGENTES</span>
-          <h2>6 agentes analisando a oportunidade</h2>
+          <h2>Consulta e análise de ofertas</h2>
         </div>
         <div class="connector-state">
-          <div id="agentSummary" class="muted">Aguardando pesquisa</div>
+          <div id="agentSummary" class="muted" aria-live="polite">Aguardando pesquisa</div>
           <a id="mlConnect" class="connect-ml" hidden href="/.netlify/functions/ml-auth">Autorizar Mercado Livre</a>
         </div>
       </div>
       <div class="agent-grid" id="agentGrid"></div>
+      <div id="providerStatus" class="muted" aria-live="polite"></div>
     </section>
 
     <section class="results">
@@ -53,7 +54,7 @@
           <span>OFERTAS</span>
           <h2 id="resultTitle">Promoções encontradas</h2>
         </div>
-        <select id="sort">
+        <select id="sort" aria-label="Ordenar ofertas">
           <option value="score">Melhor oportunidade</option>
           <option value="price">Menor preço</option>
           <option value="discount">Maior desconto</option>
@@ -93,9 +94,9 @@
         <p>Registre seu interesse. O envio automático de avisos por e-mail ainda não está disponível.</p>
       </div>
       <form id="alertForm">
-        <input id="alertQuery" required minlength="2" maxlength="200" placeholder="Produto" />
-        <input id="alertPrice" type="number" required min="0.01" max="100000000" step="0.01" placeholder="Preço máximo" />
-        <input id="alertEmail" type="email" required maxlength="254" placeholder="Seu e-mail" />
+        <input id="alertQuery" aria-label="Produto de interesse" required minlength="2" maxlength="200" placeholder="Produto" />
+        <input id="alertPrice" aria-label="Preço máximo" type="number" required min="0.01" max="100000000" step="0.01" placeholder="Preço máximo" />
+        <input id="alertEmail" aria-label="Seu e-mail" type="email" required maxlength="254" placeholder="Seu e-mail" />
         <button type="submit">Salvar interesse</button>
       </form>
       <div id="alertMessage"></div>
