@@ -48,6 +48,7 @@ function render(){
           <span class="deal-kicker">MELHOR OPORTUNIDADE AGORA</span>
           <strong>${safe(best.title)}</strong>
           <small>${safe(best.store)}${best.discount?` • ${best.discount}% de desconto`:''}</small>
+          <small>Oferta válida enquanto durarem os estoques. Confirme preço e frete na loja.</small>
         </div>
         <div class="featured-price">${money(best.price)}</div>
         <a href="${safeUrl(best.affiliate_url||best.url)}" target="_blank" rel="noopener noreferrer${best.affiliate?' sponsored':''}">Ver oferta</a>`;
@@ -70,6 +71,7 @@ function render(){
         <span>${x.condition==='new'?'Novo':x.condition||'Não informado'}</span>
       </div>
       ${x.affiliate?'<div class="affiliate-tag">Link comissionado</div>':''}
+      <div class="meta">Oferta válida enquanto durarem os estoques. Confirme preço e frete na loja.</div>
       <a href="${safeUrl(x.affiliate_url||x.url)}" target="_blank" rel="noopener noreferrer${x.affiliate?' sponsored':''}">Ver na loja</a>
     </article>`).join('');
 }
@@ -108,7 +110,7 @@ async function search(q){
         ? `Monetização ativa em ${activeStores.map(store=>store==='kabum'?'KaBuM!':store).join(', ')}.`
         : pendingStores.includes('kabum')
           ? 'Solicitação enviada à KaBuM!. Aguardando aprovação do anunciante.'
-          : 'Estrutura de comissão pronta. Aguardando aprovação da conta de afiliado.';
+          : 'Comissões ainda não habilitadas. As ofertas levam ao site oficial da loja.';
       affiliateBox.dataset.active=data.affiliate?.active?'true':'false';
     }
     const connected=statuses.filter(x=>x.status==='connected').length;
