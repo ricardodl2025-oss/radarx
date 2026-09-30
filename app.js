@@ -1,6 +1,9 @@
 const $ = s => document.querySelector(s);
 const money = v => Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
 let results = [];
+let searchController;
+let searchVersion = 0;
+let searching = false;
 
 function safe(value){
   return String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -16,10 +19,8 @@ function safeUrl(value){
 const agents = [
   ['🎯','Orquestrador','Entende a busca e distribui a missão.'],
   ['🛰️','Caçador','Consulta os conectores de lojas.'],
-  ['🧬','Comparador','Agrupa anúncios equivalentes.'],
-  ['📉','Histórico','Mede preço atual contra histórico.'],
   ['🛡️','Verificador','Filtra anúncios suspeitos e incompletos.'],
-  ['⚡','PromoScore','Calcula a força real da oportunidade.'],
+  ['⚡','Classificador','Ordena por preço, desconto ou pontuação.'],
 ];
 
 function renderAgents(state='idle'){
@@ -31,6 +32,7 @@ function renderAgents(state='idle'){
 renderAgents();
 
 function render(){
+  if(searching) return;
   const sort = $('#sort').value;
   const list = [...results].sort((a,b)=>{
     if(sort==='price') return a.price-b.price;
@@ -57,7 +59,7 @@ function render(){
       featured.innerHTML='';
     }
   }
-  if(!list.length) $('#empty').textContent='A comparação automática de preços será exibida quando os conectores oficiais estiverem autorizados. Use as lojas abaixo para pesquisar agora.';
+  if(!list.length) $('#empty').textContent='Nenhuma oferta encontrada nesta consulta. Tente um nome mais simples ou pesquise nas lojas abaixo.';
   $('#cards').innerHTML = list.map(x=>`
     <article class="card">
       ${x.image?`<div class="product-image"><img src="${safeUrl(x.image)}" alt="" loading="lazy"></div>`:''}
@@ -88,6 +90,16 @@ function renderStoreSearches(searches=[]){
 }
 
 async function search(q){
+  const version=++searchVersion;
+  searchController?.abort();
+  const controller=new AbortController();
+  searchController=controller;
+  searching=true;
+  results=[];
+  $('#featuredOffer').hidden=true;
+  $('#featuredOffer').innerHTML='';
+  $('#resultTitle').textContent=`Buscando “${q}”`;
+  $('#providerStatus').innerHTML='';
   $('#agentSummary').textContent='Agentes trabalhando...';
   renderAgents('running');
   $('#empty').style.display='block';
@@ -95,13 +107,22 @@ async function search(q){
   $('#cards').innerHTML='';
   $('#storeSearches').innerHTML='';
   try{
-    const r = await fetch(`/.netlify/functions/search?q=${encodeURIComponent(q)}`);
+    const r = await fetch(`/.netlify/functions/search?q=${encodeURIComponent(q)}`,{signal:controller.signal});
     const data = await r.json();
+    if(version!==searchVersion) return;
     if(!r.ok) throw new Error(data.error||'Erro na busca');
     results = data.items||[];
     $('#resultTitle').textContent = `${results.length} ofertas para “${q}”`;
     renderStoreSearches(data.direct_searches||[]);
     const statuses=data.provider_status||[];
+    $('#providerStatus').innerHTML=statuses.map(store=>{
+      const detail=store.status==='connected'
+        ? `${store.count||0} ofertas recebidas`
+        : store.status==='direct'?'Pesquisa no site da loja'
+        : store.status==='error'?'Consulta indisponível agora; use a pesquisa direta abaixo'
+        : 'Consulta automática ainda não disponível';
+      return `<p><strong>${safe(store.name)}</strong>: ${safe(detail)}</p>`;
+    }).join('');
     const affiliateBox=$('#affiliateStatus');
     if(affiliateBox){
       const activeStores=data.affiliate?.stores||[];
@@ -122,14 +143,18 @@ async function search(q){
     }else if(mercadoLivre?.status==='pending'){
       $('#agentSummary').textContent = `Mercado Livre: credenciais não encontradas no servidor • ${data.elapsed_ms||0} ms`;
     }else{
-      $('#agentSummary').textContent = `${connected} conectores automáticos • Mercado Livre e mais 5 lojas por pesquisa direta • ${data.elapsed_ms||0} ms`;
+      $('#agentSummary').textContent = `${connected} lojas responderam à consulta • ${(data.direct_searches||[]).length} lojas por pesquisa direta`;
     }
+    searching=false;
     renderAgents(connected?'done':'idle');
     render();
   }catch(e){
+    if(version!==searchVersion) return;
+    searching=false;
     renderAgents('idle');
     $('#agentSummary').textContent='Falha na consulta';
-    $('#empty').textContent = e.message + '. Configure as variáveis do Netlify para ativar os conectores reais.';
+    $('#resultTitle').textContent=`Não foi possível buscar “${q}”`;
+    $('#empty').textContent='Não foi possível consultar as ofertas agora. Tente novamente em instantes.';
   }
 }
 
@@ -146,7 +171,7 @@ $('#alertForm').addEventListener('submit',async e=>{
   try{
     const r=await fetch('/.netlify/functions/alerts',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(payload)});
     const data=await r.json(); if(!r.ok) throw new Error(data.error||'Erro');
-    $('#alertMessage').textContent='Alerta criado com sucesso.';
+    $('#alertMessage').textContent='Interesse salvo. O envio automático de avisos por e-mail ainda não está disponível.';
     e.target.reset();
   }catch(err){ $('#alertMessage').textContent='Não foi possível criar: '+err.message; }
 });
