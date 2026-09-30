@@ -83,20 +83,20 @@
         <h2>Preço igual, compra direto na loja</h2>
         <p>Alguns botões podem usar links de afiliado. Se você comprar por eles, o RadarX pode receber uma comissão, sem aumentar o valor do produto.</p>
       </div>
-      <div id="affiliateStatus" class="affiliate-status">Estrutura de comissão pronta. Aguardando aprovação da conta de afiliado.</div>
+      <div id="affiliateStatus" class="affiliate-status">Comissões ainda não habilitadas. As ofertas levam ao site oficial da loja.</div>
     </section>
 
     <section class="alert-box">
       <div>
         <span>RADAR AUTOMÁTICO</span>
-        <h2>Quer ser avisado quando chegar no seu preço?</h2>
-        <p>Cadastre um produto e um valor máximo. O RadarX deixa o alerta salvo no Supabase.</p>
+        <h2>Salve o produto e o preço que você procura</h2>
+        <p>Registre seu interesse. O envio automático de avisos por e-mail ainda não está disponível.</p>
       </div>
       <form id="alertForm">
-        <input id="alertQuery" placeholder="Produto" />
-        <input id="alertPrice" type="number" step="0.01" placeholder="Preço máximo" />
-        <input id="alertEmail" type="email" placeholder="Seu e-mail" />
-        <button type="submit">Criar alerta</button>
+        <input id="alertQuery" required minlength="2" maxlength="200" placeholder="Produto" />
+        <input id="alertPrice" type="number" required min="0.01" max="100000000" step="0.01" placeholder="Preço máximo" />
+        <input id="alertEmail" type="email" required maxlength="254" placeholder="Seu e-mail" />
+        <button type="submit">Salvar interesse</button>
       </form>
       <div id="alertMessage"></div>
     </section>
