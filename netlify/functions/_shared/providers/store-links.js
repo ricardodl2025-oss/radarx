@@ -7,7 +7,7 @@ function storeSearches(q){
   const path=slug(q);
   return [
     {key:'mercadolivre',name:'Mercado Livre',url:`https://lista.mercadolivre.com.br/${path}`,mode:'Busca direta'},
-    {key:'magalu',name:'Magazine Luiza',url:`https://www.magazineluiza.com.br/busca/${path}/`,mode:'Busca direta'},
+    {key:'magalu',name:'Magazine Luiza',query:q.trim(),url:`https://www.magazineluiza.com.br/busca/${path}/`,mode:'Busca direta'},
     {key:'amazon',name:'Amazon Brasil',url:`https://www.amazon.com.br/s?k=${encoded}`,mode:'Busca direta'},
     {key:'kabum',name:'KaBuM!',url:`https://www.kabum.com.br/busca/${path}`,mode:'Busca direta'},
     {key:'casasbahia',name:'Casas Bahia',url:`https://www.casasbahia.com.br/${path}/b`,mode:'Busca direta'},
