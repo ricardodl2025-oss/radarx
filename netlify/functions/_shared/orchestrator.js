@@ -37,7 +37,7 @@ async function orchestrate(query){
     key:provider.key,
     name:provider.name,
     status:settled[index].status==='rejected'?'error':provider.live?'connected':'pending',
-    count:settled[index].status==='fulfilled'?settled[index].value.length:0,
+    count:items.filter(item=>item.source===provider.key).length,
     error:settled[index].status==='rejected'
       ? String(settled[index].reason?.message||'Falha no conector')
       : undefined
@@ -52,6 +52,7 @@ async function orchestrate(query){
   });
 
   return {
+    checked_at:new Date().toISOString(),
     items,
     direct_searches:storeSearches(query).map(monetizeSearch),
     affiliate:affiliateStatus(),

@@ -17,8 +17,8 @@
   <main>
     <section class="hero">
       <div class="eyebrow">BUSCA INTELIGENTE DE OFERTAS</div>
-      <h1>Encontre a promoção.<br><span>Antes que ela suma.</span></h1>
-      <p>Consulte ofertas de várias lojas e compare os preços antes de comprar.</p>
+      <h1>Compare o preço.<br><span>Confira o custo final.</span></h1>
+      <p>Veja quais lojas responderam e compare até três opções com frete e desconto.</p>
 
       <form id="searchForm" class="search">
         <input id="query" aria-label="Produto que deseja buscar" required minlength="2" maxlength="200" autocomplete="off" placeholder="Ex.: ar-condicionado 9000 ou notebook gamer" />
@@ -48,6 +48,19 @@
       <div id="providerStatus" class="muted" aria-live="polite"></div>
     </section>
 
+    <section class="stores">
+      <div class="section-title">
+        <div>
+          <span>COBERTURA DA BUSCA</span>
+          <h2>Cada loja, sem mistério</h2>
+        </div>
+        <div class="muted">Ofertas aqui e pesquisas externas são indicadas separadamente.</div>
+      </div>
+      <div id="storeSearches" class="store-searches">
+        <div class="empty compact">Faça uma busca para liberar as lojas.</div>
+      </div>
+    </section>
+
     <section class="results">
       <div class="section-title">
         <div>
@@ -55,27 +68,40 @@
           <h2 id="resultTitle">Promoções encontradas</h2>
         </div>
         <select id="sort" aria-label="Ordenar ofertas">
-          <option value="score">Melhor oportunidade</option>
-          <option value="price">Menor preço</option>
+          <option value="price">Menor preço sem frete</option>
+          <option value="score">Critérios da oferta</option>
           <option value="discount">Maior desconto</option>
         </select>
       </div>
+      <div class="result-controls">
+        <label>Loja <select id="storeFilter"><option value="">Todas com ofertas</option></select></label>
+        <label>Voltagem no título <select id="voltageFilter"><option value="">Todas</option><option value="127">127 V</option><option value="110">110 V</option><option value="220">220 V</option><option value="bivolt">Bivolt</option></select></label>
+        <label>Preço máximo sem frete <input id="maxPrice" type="number" min="0" step="0.01" placeholder="R$ sem limite"></label>
+        <button id="clearFilters" type="button">Limpar filtros</button>
+      </div>
+      <p id="searchFreshness" class="muted"></p>
+      <p id="filterCount" aria-live="polite"></p>
+      <a id="compareJump" href="#comparison" hidden>Ver comparação</a>
       <div id="empty" class="empty">Faça uma busca para o RadarX começar a trabalhar.</div>
       <div id="featuredOffer" class="featured-offer" hidden></div>
       <div id="cards" class="cards"></div>
     </section>
 
-    <section class="stores">
-      <div class="section-title">
-        <div>
-          <span>PESQUISAR EM OUTRAS LOJAS</span>
-          <h2>Compare nos sites oficiais</h2>
-        </div>
-        <div class="muted">Os botões abrem a pesquisa do mesmo produto em cada loja.</div>
-      </div>
-      <div id="storeSearches" class="store-searches">
-        <div class="empty compact">Faça uma busca para liberar as lojas.</div>
-      </div>
+    <section id="comparison" class="comparison" aria-labelledby="comparisonTitle">
+      <div class="section-title"><div><span>DECISÃO DE COMPRA</span><h2 id="comparisonTitle">Qual sai mais barato no final?</h2></div><button id="clearComparison" type="button">Limpar comparação</button></div>
+      <p>Marque até três ofertas. Preencha o frete visto na loja e algum desconto adicional válido. Os valores são uma simulação, sem consulta automática de frete.</p>
+      <p id="comparisonMessage" role="status">Escolha “Comparar” em uma oferta para começar.</p>
+      <div id="comparisonCards" class="comparison-cards"></div>
+      <div id="comparisonVerdict" class="comparison-verdict" aria-live="polite"></div>
+      <details class="manual-offer"><summary>Comparar uma oferta que encontrei no Magalu ou em outra loja</summary>
+        <p>Se a loja não carregou produtos aqui, você pode incluir o preço que encontrou. A oferta será marcada como informada por você.</p>
+        <form id="manualOfferForm">
+          <label>Produto e modelo <input id="manualTitle" required maxlength="200" placeholder="Ex.: Ar LG 9000 BTUs 220 V"></label>
+          <label>Loja <select id="manualStore"><option>Magazine Luiza</option><option>Mercado Livre</option><option>Amazon Brasil</option><option>Shopee</option><option>KaBuM!</option><option>Casas Bahia</option><option>Outra loja</option></select></label>
+          <label>Preço na condição de pagamento escolhida <input id="manualPrice" required type="number" min="0.01" max="100000000" step="0.01" placeholder="R$"></label>
+          <button type="submit">Incluir na comparação</button>
+        </form>
+      </details>
     </section>
 
     <section class="partner-box">
@@ -103,7 +129,7 @@
     </section>
   </main>
 
-  <footer>RadarX V3 • Comparação de preços e links de parceiros • Supabase + Netlify</footer>
+  <footer>RadarX • Preços sujeitos a alteração. Confirme pagamento, vendedor e entrega na loja.</footer>
   <script src="/app.js"></script>
 </body>
 </html>

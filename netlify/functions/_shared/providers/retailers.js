@@ -63,7 +63,7 @@ function mapProduct(product,store,source){
     original_price:null,
     image:Array.isArray(product.image)?product.image[0]:product.image||null,
     store,
-    official_store:true,
+    official_store:false,
     shipping_free:false,
     condition:'new',
     url,
