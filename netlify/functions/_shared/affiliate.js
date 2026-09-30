@@ -22,6 +22,7 @@ function awinLink(storeKey,destination,clickref='radarx'){
   try{
     const target=new URL(destination);
     if(target.protocol!=='https:') return null;
+    if(storeKey==='kabum' && target.hostname!=='kabum.com.br' && !target.hostname.endsWith('.kabum.com.br')) return null;
     const link=new URL('https://www.awin1.com/cread.php');
     link.searchParams.set('awinmid',advertiserId);
     link.searchParams.set('awinaffid',publisherId);
@@ -49,8 +50,8 @@ function affiliateStatus(){
   return {
     active:Boolean(publisherId && stores.length),
     network:'Awin',
-    stores,
-    pending:publisherId?Object.keys(AWIN_ADVERTISERS).filter(store=>!stores.includes(store)):[]
+    stores:publisherId?stores:[],
+    pending:publisherId?String(process.env.AWIN_PENDING_STORES||'').split(',').map(store=>store.trim().toLowerCase()).filter(store=>AWIN_ADVERTISERS[store] && !stores.includes(store)):[]
   };
 }
 
