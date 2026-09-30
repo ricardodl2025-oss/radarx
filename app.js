@@ -128,7 +128,7 @@ async function search(q){
       const activeStores=data.affiliate?.stores||[];
       const pendingStores=data.affiliate?.pending||[];
       affiliateBox.textContent=data.affiliate?.active
-        ? `Monetização ativa em ${activeStores.map(store=>store==='kabum'?'KaBuM!':store).join(', ')}.`
+        ? `Links de afiliado disponíveis em ${activeStores.map(store=>store==='kabum'?'KaBuM!':store==='magalu'?'Magalu':store).join(', ')}. A comissão depende de uma venda elegível pelas regras do programa.`
         : pendingStores.includes('kabum')
           ? 'Solicitação enviada à KaBuM!. Aguardando aprovação do anunciante.'
           : 'Comissões ainda não habilitadas. As ofertas levam ao site oficial da loja.';
